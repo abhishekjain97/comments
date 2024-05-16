@@ -42,8 +42,13 @@ submitButton.addEventListener('click', () => {
     if(commentText) {
         addComment(commentText, commentCount)
         commentInput.value = ""
+        commentInput.style.border = "1px solid #ccc"
         commentCount = commentCount + 1
+    } else {
+        window.alert("Please write something in the comment box!")
+        commentInput.style.border = "1px solid red"
     }
+    
 })
 
 commentsContainer.addEventListener("click", function(e) {
@@ -54,41 +59,45 @@ commentsContainer.addEventListener("click", function(e) {
 })
 
 function relpyComment(e, value, isNew) {
-    let replyText
-    let reply_container
-    let comment_id
-    if(isNew) {
-        replyText = e.target.parentElement.querySelector(".replyInput").value
-        reply_container = e.target.parentElement.querySelector(".repliesContainer")
+    if(value !== '') {
+        let replyText
+        let reply_container
+        let comment_id
+        if(isNew) {
+            replyText = e.target.parentElement.querySelector(".replyInput").value
+            reply_container = e.target.parentElement.querySelector(".repliesContainer")
 
-        comment_id = e.target.parentElement.id
+            comment_id = e.target.parentElement.id
+        } else {
+            replyText = value
+            reply_container = e.querySelector(".repliesContainer")
+
+            comment_id = e.id
+        }
+        
+        const reply_div = document.createElement("div")
+        reply_div.setAttribute("class", "reply")
+
+        const reply_output = `<p>${replyText}</p>`
+
+        reply_div.innerHTML = reply_output
+
+        reply_container.appendChild(reply_div)
+
+        console.log(replyText, comment_id, reply_container, reply_div);
+
+        const current_comment = dataArr.find((ele) => ele.comment_id == comment_id)
+        current_comment.reply.push({
+            'comment'  :  replyText
+        })
+
+        localStorage.setItem("comments", JSON.stringify(dataArr))
+
+        if(isNew) {
+            e.target.parentElement.querySelector(".replyInput").value = ""
+        }
     } else {
-        replyText = value
-        reply_container = e.querySelector(".repliesContainer")
-
-        comment_id = e.id
-    }
-    
-    const reply_div = document.createElement("div")
-    reply_div.setAttribute("class", "reply")
-
-    const reply_output = `<p>${replyText}</p>`
-
-    reply_div.innerHTML = reply_output
-
-    reply_container.appendChild(reply_div)
-
-    console.log(replyText, comment_id, reply_container, reply_div);
-
-    const current_comment = dataArr.find((ele) => ele.comment_id == comment_id)
-    current_comment.reply.push({
-        'comment'  :  replyText
-    })
-
-    localStorage.setItem("comments", JSON.stringify(dataArr))
-
-    if(isNew) {
-        e.target.parentElement.querySelector(".replyInput").value = ""
+        window.alert("Please write something in the comment box!")
     }
 }
 
